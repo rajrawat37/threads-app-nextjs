@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-//using shadcn/ui components 
+//using shadcn/ui library components 
 //after installation automatically a ui folder would be generated containing respective components.
 import {
     Form,
@@ -18,6 +18,7 @@ import { Button } from "../ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 
+//Zod for form validation
 import * as z from "zod"
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -46,10 +47,13 @@ interface UserProps{
 const AccountProfile = ({user,btnTitle} : UserProps) => {
 
     const [files,setFiles] =useState<File[]>([]);
-    const { startUpload } = useUploadThing("media");
+    const { startUpload } = useUploadThing("media"); //Hook provided by uploadthing to upload media
     
+  //create form schema or define shape of form using useForm() Hook
     const form =useForm({
-        resolver:zodResolver(UserValidation),
+        resolver:zodResolver(UserValidation),   // zod Resolver for user validation defined by us using Zod
+        
+        //filling default values in onboarding page from user object(passed from props)
         defaultValues : {
             profile_photo:user?.image || "",
             name:user?.name || "",
@@ -59,46 +63,59 @@ const AccountProfile = ({user,btnTitle} : UserProps) => {
     });
 
     const handleImage = (e:ChangeEvent<HTMLInputElement> , fieldChange : (value:string) => void) => {
+        
+        //to prevent browser reload
         e.preventDefault();
         
-        console.log(e);
-        console.log("Target value : " , e.target.files);
+        // console.log(e);
+        // console.log("Target value : " , e.target.files);
 
         // changing image and field when user uploads custom img file
         
         // initializing a file reader
         const fileReader = new FileReader();
 
+        //if e.target.files is not null and if its length is greater than 0
         if(e.target.files && e.target.files.length>0){
 
-            const file=e.target.files[0];
+            const file=e.target.files[0]; 
             setFiles(Array.from(e.target.files));
 
-            // if not an image type of file
+            // if not an image type of file then exit out
             if(!file.type.includes('image')) return;
 
             fileReader.onload = async(event) => {
                 const imageDataUrl = event.target?.result?.toString() || '';
+                console.log(imageDataUrl);
                 fieldChange(imageDataUrl);
             }
+
+            //used to read the contents of a file and generate a data URL
             fileReader.readAsDataURL(file);
         }
     }
 
+    //defining submit handler for form
+    //this function will re-upload the image(if any) and update the user it in MongoDB database
+    //user details typed in form is passed as parameters
     const  onSubmit= async(values: z.infer<typeof UserValidation>) => {
+       
+      
         const blob = values.profile_photo;
-        
-        
-        const hasImageChanged = isBase64Image(blob);
-        if(hasImageChanged){
-            const imgRes=await startUpload(files);
 
-            if(imgRes && imgRes[0].fileUrl){
-                values.profile_photo=imgRes[0].fileUrl;
+        //If an image file has been uploaded by user then it must have been converted to
+        //base64 encoded string by "readAsDataUrl" method of FileReader in handleImage() function ;
+        const hasImageChanged = isBase64Image(blob);
+
+        if(hasImageChanged){
+            const imgRes=await startUpload(files);  //uploading image using hook provided by Uploadthing
+
+            if(imgRes && imgRes[0].url){
+                values.profile_photo=imgRes[0].url;
             }
         }
         //backend function to update user profile
-        console.log(values);
+        console.log(values,"😇 Values are 😇");
     }
 
 
