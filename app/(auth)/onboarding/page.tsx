@@ -1,10 +1,15 @@
 import AccountProfile from "@/components/forms/AccountProfile";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs"; 
 
 async function Page() {
+    //clerk provides us with currentUser.
+    //The currentUser() helper returns the User object of the currently active user. 
     const user=await currentUser();
+
+    //later on we have new fetch user fetching it from database & not the current logged in one .
     const userInfo ={};
 
+    //creating an object of user to pass it on to AccountProfile component.
     const userData = {
         id:user?.id,
         objectId:userInfo?._id,
@@ -12,7 +17,6 @@ async function Page() {
         name:userInfo?.name || user?.firstName | "",
         bio:userInfo?.bio || "",
         image:userInfo?.image || user?.imageUrl,
-
     }
     return(
         <main className="mx-auto flex max-w-3xl flex-col justify-start px-10 py-20"> 

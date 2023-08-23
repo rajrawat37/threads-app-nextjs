@@ -1,6 +1,9 @@
 "use client"
 
 import Image from "next/image";
+
+//using shadcn/ui components 
+//after installation automatically a ui folder would be generated containing respective components.
 import {
     Form,
     FormControl,
@@ -11,16 +14,23 @@ import {
     FormMessage,
   } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import * as z from "zod"
-
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { UserValidation } from '@/lib/validations/user';
 import { Button } from "../ui/button";
-import { ChangeEvent, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 
-interface Props{
+
+import * as z from "zod"
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+
+import { ChangeEvent, useState } from "react";
+
+import { isBase64Image } from "@/lib/utils";
+import { useUploadThing } from "@/lib/uploadthing";
+import { UserValidation } from '@/lib/validations/user';
+
+
+interface UserProps{
     user:{
         id:string;
         objectId:string;
@@ -33,9 +43,10 @@ interface Props{
 }
 
 
-const AccountProfile = ({user,btnTitle} : Props) => {
+const AccountProfile = ({user,btnTitle} : UserProps) => {
 
     const [files,setFiles] =useState<File[]>([]);
+    const { startUpload } = useUploadThing("media");
     
     const form =useForm({
         resolver:zodResolver(UserValidation),
@@ -74,11 +85,23 @@ const AccountProfile = ({user,btnTitle} : Props) => {
         }
     }
 
-    function onSubmit(values: z.infer<typeof UserValidation>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
+    const  onSubmit= async(values: z.infer<typeof UserValidation>) => {
+        const blob = values.profile_photo;
+        
+        
+        const hasImageChanged = isBase64Image(blob);
+        if(hasImageChanged){
+            const imgRes=await startUpload(files);
+
+            if(imgRes && imgRes[0].fileUrl){
+                values.profile_photo=imgRes[0].fileUrl;
+            }
+        }
+        //backend function to update user profile
         console.log(values);
-      }
+    }
+
+
     return(
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} 
