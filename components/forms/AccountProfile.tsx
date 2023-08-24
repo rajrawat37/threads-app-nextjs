@@ -29,6 +29,9 @@ import { ChangeEvent, useState } from "react";
 import { isBase64Image } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
 import { UserValidation } from '@/lib/validations/user';
+import { updateUser } from "@/lib/actions/user.action";
+
+import {usePathname,useRouter} from 'next/navigation';
 
 
 interface UserProps{
@@ -48,7 +51,9 @@ const AccountProfile = ({user,btnTitle} : UserProps) => {
 
     const [files,setFiles] =useState<File[]>([]);
     const { startUpload } = useUploadThing("media"); //Hook provided by uploadthing to upload media
-    
+    const router=useRouter();
+    const pathname=usePathname();
+
   //create form schema or define shape of form using useForm() Hook
     const form =useForm({
         resolver:zodResolver(UserValidation),   // zod Resolver for user validation defined by us using Zod
@@ -114,13 +119,25 @@ const AccountProfile = ({user,btnTitle} : UserProps) => {
                 values.profile_photo=imgRes[0].url;
             }
         }
+
         //backend function to update user profile
         console.log(values,"😇 Values are 😇");
 
-        
-
+        await updateUser({
+          name: values.name,
+          path: pathname,
+          username: values.username,
+          userId: user.id,
+          bio: values.bio,
+          image: values.profile_photo,
+        });
+    
+        if (pathname === "/profile/edit") {
+          router.back();
+        } else {
+          router.push("/");
+        }   
     }
-
 
     return(
     <Form {...form}>

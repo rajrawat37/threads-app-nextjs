@@ -4,15 +4,24 @@ import { revalidatePath } from "next/cache";
 import User from "../models/user.model";
 import { connectToDB } from "../mongoose";
 
+interface Params {
+  userId: string;
+  username: string;
+  name: string;
+  bio: string;
+  image: string;
+  path: string;
+}
+
 //first make connection to mongoose
-export async function updateUser(
-  userId: string,
-  username: string,
-  name: string,
-  bio: string,
-  image: string,
-  path: string
-): Promise<void> {
+export async function updateUser({
+  userId,
+  bio,
+  name,
+  path,
+  username,
+  image,
+}: Params): Promise<void> {
   try {
     connectToDB();
 
@@ -35,7 +44,7 @@ export async function updateUser(
     );
 
     if (path === "/profile/edit") {
-      revalidatePath(path);   //to update the cached data without waiting for revalidation to expire
+      revalidatePath(path); //to update the cached data without waiting for revalidation to expire
     }
   } catch (error: any) {
     throw new Error(`Failed to create/update user: ${error.message}`);
