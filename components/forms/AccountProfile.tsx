@@ -116,6 +116,9 @@ const AccountProfile = ({user,btnTitle} : UserProps) => {
         }
         //backend function to update user profile
         console.log(values,"😇 Values are 😇");
+
+        
+
     }
 
 
