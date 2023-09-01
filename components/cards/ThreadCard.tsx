@@ -87,7 +87,7 @@ function ThreadCard({
                     className='cursor-pointer object-contain'
                   />
                 </Link>
-                {/* <Image
+                 <Image
                   src='/assets/repost.svg'
                   alt='heart'
                   width={24}
@@ -100,7 +100,7 @@ function ThreadCard({
                   width={24}
                   height={24}
                   className='cursor-pointer object-contain'
-                /> */}
+                /> 
               </div>
 
               {isComment && comments.length > 0 && (
