@@ -12,6 +12,7 @@ async function Page() {
     //later on we have new fetch user fetching it from database & not the current logged in one .
 
     const userInfo = await fetchUser(user.id);
+    console.log("UserInfo 🥇 " ,userInfo);
     if (userInfo?.onboarded) redirect("/");
 
 
