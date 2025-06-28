@@ -10,6 +10,8 @@ interface Props {
   imgUrl: string;
   bio: string;
   members: {
+    _id: string;
+    name: string;
     image: string;
   }[];
 }
@@ -48,9 +50,9 @@ function CommunityCard({ id, name, username, imgUrl, bio, members }: Props) {
           <div className='flex items-center'>
             {members.map((member, index) => (
               <Image
-                key={index}
+                key={member._id}
                 src={member.image}
-                alt={`user_${index}`}
+                alt={`user_${member.name}`}
                 width={28}
                 height={28}
                 className={`${

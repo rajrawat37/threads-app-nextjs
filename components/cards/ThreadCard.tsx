@@ -23,6 +23,7 @@ interface Props {
   comments: {
     author: {
       image: string;
+      name: string;
     };
   }[];
   isComment?: boolean;
@@ -129,7 +130,7 @@ function ThreadCard({
             <Image
               key={index}
               src={comment.author.image}
-              alt={`user_${index}`}
+              alt={`user_${comment.author.name}`}
               width={24}
               height={24}
               className={`${index !== 0 && "-ml-5"} rounded-full object-cover`}
