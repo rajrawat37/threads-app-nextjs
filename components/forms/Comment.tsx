@@ -40,7 +40,7 @@ function Comment({ threadId, currentUserImg, currentUserId }: Props) {
     await addCommentToThread(
       threadId,
       values.thread,
-      JSON.parse(currentUserId),
+      currentUserId,
       pathname
     );
 

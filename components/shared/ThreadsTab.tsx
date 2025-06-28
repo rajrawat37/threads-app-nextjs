@@ -38,18 +38,47 @@ interface Props {
   accountType: string;
 }
 
+// Helper function to serialize MongoDB objects
+function serializeThread(thread: any) {
+  return {
+    _id: thread._id.toString(),
+    text: thread.text,
+    parentId: thread.parentId,
+    author: {
+      name: thread.author.name,
+      image: thread.author.image,
+      id: thread.author.id,
+    },
+    community: thread.community ? {
+      id: thread.community.id,
+      name: thread.community.name,
+      image: thread.community.image,
+    } : null,
+    createdAt: thread.createdAt.toISOString(),
+    children: thread.children.map((child: any) => ({
+      author: {
+        image: child.author.image,
+        name: child.author.name || '',
+      }
+    }))
+  };
+}
+
 async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
   let result: Result;
 
-    result = await fetchUserPosts(accountId);
+  result = await fetchUserPosts(accountId);
 
   if (!result) {
     redirect("/");
   }
 
+  // Serialize the threads data
+  const serializedThreads = result.threads.map(serializeThread);
+
   return (
     <section className='mt-9 flex flex-col gap-10'>
-      {result.threads.map((thread) => (
+      {serializedThreads.map((thread) => (
         <ThreadCard
           key={thread._id}
           id={thread._id}
