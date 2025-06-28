@@ -1,10 +1,10 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import  { currentUser} from '@clerk/nextjs';
+import { currentUser } from "@clerk/nextjs/server";
 
 const f = createUploadthing();
- 
-const getUser =  async () => await currentUser(); // Fake auth function
- 
+
+const getUser = async () => await currentUser; // Fake auth function
+
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
