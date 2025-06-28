@@ -32,7 +32,7 @@ export default function RootLayout({
         afterSignInUrl="/"
         afterSignUpUrl="/onboarding"
       >
-        <body className={`${inter.className} bg-dark-1`}>
+        <body className={`${inter.className} bg-dark-1`} suppressHydrationWarning>
           {children}
         </body>
       </ClerkProvider>
