@@ -1,18 +1,20 @@
-import AccountProfile from "@/components/forms/AccountProfile";
-import { currentUser } from "@clerk/nextjs"; 
+import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+
+import AccountProfile from "@/components/forms/AccountProfile";
 import { fetchUser } from "@/lib/actions/user.action";
 
 async function Page() {
     //clerk provides us with currentUser.
     //The currentUser() helper returns the User object of the currently active user. 
-    const user=await currentUser();
+    const user = await currentUser();
+    console.log("User from Clerk:", user);
     if (!user) return null; // to avoid typescript warnings
 
     //later on we have new fetch user fetching it from database & not the current logged in one .
 
     const userInfo = await fetchUser(user.id);
-    console.log("UserInfo 🥇 " ,userInfo);
+    console.log("UserInfo from DB: " ,userInfo);
     if (userInfo?.onboarded) redirect("/");
 
 
